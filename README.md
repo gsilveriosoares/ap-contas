@@ -50,8 +50,8 @@ Configuração no painel do Supabase:
 
 1. **SQL Editor** → colar `supabase/001_contas.sql` → **Run** (cria a tabela `contas` com RLS).
 2. **Authentication → URL Configuration**
-   - Site URL: `https://ap-contas.gsilveriosoares.workers.dev`
-   - Redirect URLs: `https://ap-contas.gsilveriosoares.workers.dev/**` e `http://localhost:4200/**`
+   - Site URL: `https://ap-contas.gsilveriosoares.workers.dev` (para onde o link do e-mail leva)
+   - Redirect URLs: `http://localhost:4200` (só para testar no computador)
 3. **Authentication → Emails → Magic Link**: incluir `{{ .Token }}` no texto, para o código de 6 dígitos
    (o app instalado no celular entra pelo código, porque o link do e-mail abre no navegador).
 4. Depois do primeiro login: **Authentication → Sign In / Providers** → desligar **Allow new users to sign up**

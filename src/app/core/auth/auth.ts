@@ -28,7 +28,8 @@ export class Auth {
   async enviarLink(email: string): Promise<void> {
     const { error } = await this.supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${location.origin}/inicio` },
+      // Endereço raiz = "Site URL" do Supabase, que já é permitido sem configurar mais nada
+      options: { emailRedirectTo: location.origin },
     });
     if (error) throw error;
   }

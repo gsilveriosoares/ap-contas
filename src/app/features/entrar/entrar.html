@@ -1,0 +1,79 @@
+<div class="entrar">
+  <!-- Marca -->
+  <section class="marca" aria-label="ApContas">
+    <div class="marca-conteudo">
+      <div class="marca-logo">
+        <img src="logo.svg" alt="" width="52" height="52" />
+        <span>ApContas</span>
+      </div>
+      <h1 class="marca-titulo">Suas contas em dia,<br />sem planilha.</h1>
+      <ul class="marca-lista">
+        @for (v of vantagens; track v.texto) {
+          <li><span class="marca-icone"><i class="bi" [class]="v.icone" aria-hidden="true"></i></span>{{ v.texto }}</li>
+        }
+      </ul>
+    </div>
+    <svg class="marca-decoracao" viewBox="0 0 200 200" aria-hidden="true">
+      <circle cx="160" cy="40" r="90" />
+      <circle cx="30" cy="190" r="60" />
+    </svg>
+  </section>
+
+  <!-- Formulário -->
+  <main class="folha">
+    <div class="folha-conteudo">
+      @if (etapa() === 'email') {
+        <h2 class="folha-titulo">Entrar</h2>
+        <p class="text-body-secondary mb-4">Digite seu e-mail. Mandamos um acesso na hora — sem senha para lembrar.</p>
+
+        <form (ngSubmit)="enviar()" #fEmail="ngForm">
+          <label for="email" class="form-label fw-semibold">E-mail</label>
+          <div class="input-group input-group-lg mb-3">
+            <span class="input-group-text"><i class="bi bi-envelope" aria-hidden="true"></i></span>
+            <input id="email" name="email" type="email" class="form-control" placeholder="voce@email.com" required email
+              autocomplete="email" inputmode="email" [(ngModel)]="email" [disabled]="carregando()" />
+          </div>
+          <button class="btn btn-primary btn-lg w-100" [disabled]="fEmail.invalid || carregando()">
+            @if (carregando()) {
+              <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Enviando…
+            } @else {
+              Receber acesso<i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+            }
+          </button>
+        </form>
+      } @else {
+        <div class="enviado-icone" aria-hidden="true"><i class="bi bi-envelope-check"></i></div>
+        <h2 class="folha-titulo">Confira seu e-mail</h2>
+        <p class="text-body-secondary mb-4">
+          Enviamos para <strong class="text-body">{{ email }}</strong>.<br />
+          Toque no link do e-mail <strong>ou</strong> digite o código abaixo.
+        </p>
+
+        <form (ngSubmit)="confirmar()" #fCodigo="ngForm">
+          <label for="codigo" class="form-label fw-semibold">Código de 6 dígitos</label>
+          <input id="codigo" name="codigo" class="form-control form-control-lg codigo mb-3" placeholder="000000" required
+            minlength="6" maxlength="8" pattern="[0-9]*" inputmode="numeric" autocomplete="one-time-code"
+            [(ngModel)]="codigo" [disabled]="carregando()" />
+          <button class="btn btn-primary btn-lg w-100 mb-2" [disabled]="fCodigo.invalid || carregando()">
+            @if (carregando()) {
+              <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Entrando…
+            } @else {
+              Entrar
+            }
+          </button>
+          <button type="button" class="btn btn-link w-100" (click)="voltar()">
+            <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Usar outro e-mail
+          </button>
+        </form>
+      }
+
+      @if (erro()) {
+        <div class="alert alert-danger d-flex gap-2 mt-3 mb-0 small" role="alert">
+          <i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i><span>{{ erro() }}</span>
+        </div>
+      }
+
+      <p class="rodape"><i class="bi bi-shield-lock me-1" aria-hidden="true"></i>Seus dados ficam só na sua conta.</p>
+    </div>
+  </main>
+</div>
