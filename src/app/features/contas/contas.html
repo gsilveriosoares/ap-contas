@@ -1,0 +1,72 @@
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+  <h1 class="mb-0">Contas</h1>
+  <a routerLink="/contas/nova" class="btn btn-primary d-none d-lg-inline-flex align-items-center">
+    <i class="bi bi-plus-lg me-1"></i>Nova conta
+  </a>
+</div>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <button type="button" class="btn btn-outline-secondary btn-sm rounded-circle" style="width: 2.5rem" aria-label="Mês anterior" (click)="mudarMes(-1)">
+    <i class="bi bi-chevron-left"></i>
+  </button>
+  <div class="text-center">
+    <div class="fw-semibold" aria-live="polite">{{ mes() | date: 'MMMM' | titlecase }} de {{ mes() | date: 'yyyy' }}</div>
+    @if (!ehMesAtual()) {
+      <button type="button" class="btn btn-link btn-sm p-0" style="min-height: 0" (click)="voltarParaHoje()">Voltar para hoje</button>
+    }
+  </div>
+  <button type="button" class="btn btn-outline-secondary btn-sm rounded-circle" style="width: 2.5rem" aria-label="Próximo mês" (click)="mudarMes(1)">
+    <i class="bi bi-chevron-right"></i>
+  </button>
+</div>
+
+<div class="row g-2 mb-3 text-center small">
+  <div class="col-4"><div class="rotulo">Total</div><div class="valor fw-semibold">{{ totais().total | currency }}</div></div>
+  <div class="col-4"><div class="rotulo">Pago</div><div class="valor fw-semibold text-success">{{ totais().pago | currency }}</div></div>
+  <div class="col-4"><div class="rotulo">Falta</div><div class="valor fw-semibold">{{ totais().falta | currency }}</div></div>
+</div>
+
+<div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="Filtrar contas">
+  @for (f of filtros; track f.id) {
+    <button type="button" class="btn btn-sm rounded-pill px-3" [class.btn-primary]="filtro() === f.id"
+      [class.btn-outline-secondary]="filtro() !== f.id" [attr.aria-pressed]="filtro() === f.id" (click)="filtro.set(f.id)">
+      {{ f.rotulo }}
+    </button>
+  }
+</div>
+
+@if (erro()) {
+  <div class="alert alert-danger small" role="alert">
+    {{ erro() }} <button type="button" class="btn btn-link btn-sm p-0 align-baseline" (click)="carregar()">Tentar de novo</button>
+  </div>
+}
+
+@if (carregando()) {
+  <div class="text-center py-5"><span class="spinner-border text-primary" role="status"><span class="visually-hidden">Carregando</span></span></div>
+} @else {
+  @if (listaAnteriores().length) {
+    <h2 class="h6 text-danger-emphasis mb-2"><i class="bi bi-exclamation-circle me-1"></i>De meses anteriores</h2>
+    <div class="list-group mb-3">
+      @for (c of listaAnteriores(); track c.id) {
+        <app-item-conta [conta]="c" [ocupado]="ocupadas().has(c.id)" (alternarPaga)="alternarPaga($event)" />
+      }
+    </div>
+  }
+
+  @if (listaMes().length) {
+    <div class="list-group">
+      @for (c of listaMes(); track c.id) {
+        <app-item-conta [conta]="c" [ocupado]="ocupadas().has(c.id)" (alternarPaga)="alternarPaga($event)" />
+      }
+    </div>
+  } @else if (!listaAnteriores().length) {
+    @if (doMes().length) {
+      <app-estado-vazio icone="bi-funnel" titulo="Nada neste filtro" texto="Troque o filtro acima para ver as outras contas do mês." />
+    } @else {
+      <app-estado-vazio icone="bi-receipt" titulo="Nenhuma conta neste mês"
+        texto="Cadastre uma conta e marque como paga com um toque.">
+        <a routerLink="/contas/nova" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Nova conta</a>
+      </app-estado-vazio>
+    }
+  }
+}

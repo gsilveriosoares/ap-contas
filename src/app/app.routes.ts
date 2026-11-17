@@ -1,12 +1,22 @@
 import { Routes } from '@angular/router';
+import { exigeLogin, soSemLogin } from './core/auth/guardas';
 import { Shell } from './core/layout/shell';
 
 const emBreve = () => import('./shared/pagina-em-breve/pagina-em-breve').then((m) => m.PaginaEmBreve);
 
+const formConta = () => import('./features/conta-form/conta-form').then((m) => m.ContaForm);
+
 export const routes: Routes = [
+  {
+    path: 'entrar',
+    title: 'Entrar · ApContas',
+    canActivate: [soSemLogin],
+    loadComponent: () => import('./features/entrar/entrar').then((m) => m.Entrar),
+  },
   {
     path: '',
     component: Shell,
+    canActivate: [exigeLogin],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'inicio' },
       {
@@ -19,17 +29,8 @@ export const routes: Routes = [
         title: 'Contas · ApContas',
         loadComponent: () => import('./features/contas/contas').then((m) => m.Contas),
       },
-      {
-        path: 'contas/nova',
-        title: 'Nova conta · ApContas',
-        loadComponent: emBreve,
-        data: {
-          titulo: 'Nova conta',
-          icone: 'bi-plus-circle',
-          fase: 1,
-          descricao: 'Cadastro com valor, vencimento, categoria e repetição todo mês ou em parcelas.',
-        },
-      },
+      { path: 'contas/nova', title: 'Nova conta · ApContas', loadComponent: formConta },
+      { path: 'contas/:id', title: 'Editar conta · ApContas', loadComponent: formConta },
       {
         path: 'dinheiro',
         title: 'Dinheiro · ApContas',
@@ -66,13 +67,7 @@ export const routes: Routes = [
       {
         path: 'configuracoes',
         title: 'Configurações · ApContas',
-        loadComponent: emBreve,
-        data: {
-          titulo: 'Configurações',
-          icone: 'bi-gear',
-          fase: 1,
-          descricao: 'Sua conta de acesso, categorias e preferências.',
-        },
+        loadComponent: () => import('./features/configuracoes/configuracoes').then((m) => m.Configuracoes),
       },
       {
         path: 'mais',

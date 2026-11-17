@@ -1,0 +1,127 @@
+<div class="d-flex align-items-center gap-2 mb-3">
+  <a routerLink="/contas" class="btn btn-link px-2" aria-label="Voltar para contas"><i class="bi bi-arrow-left fs-5"></i></a>
+  <h1 class="mb-0">{{ conta() ? 'Editar conta' : 'Nova conta' }}</h1>
+</div>
+
+@if (carregando()) {
+  <div class="text-center py-5"><span class="spinner-border text-primary" role="status"><span class="visually-hidden">Carregando</span></span></div>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="salvar()" class="card" style="max-width: 40rem" novalidate>
+    <div class="card-body p-3 p-md-4 d-flex flex-column gap-3">
+      <div>
+        <label for="descricao" class="form-label">Descrição</label>
+        <input id="descricao" class="form-control" formControlName="descricao" placeholder="Ex.: Aluguel, Internet, Cartão Nubank"
+          maxlength="80" autocomplete="off" [class.is-invalid]="invalido('descricao')" />
+        <div class="invalid-feedback">Diga o que é a conta.</div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-6">
+          <label for="valor" class="form-label">Valor</label>
+          <div class="input-group has-validation">
+            <span class="input-group-text">R$</span>
+            <input id="valor" class="form-control valor" formControlName="valor" inputmode="decimal" placeholder="0,00"
+              autocomplete="off" [class.is-invalid]="invalido('valor')" />
+            <div class="invalid-feedback">Valor inválido.</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <label for="vencimento" class="form-label">Vencimento</label>
+          <input id="vencimento" type="date" class="form-control" formControlName="vencimento" [class.is-invalid]="invalido('vencimento')" />
+          <div class="invalid-feedback">Escolha a data.</div>
+        </div>
+      </div>
+
+      <fieldset>
+        <legend class="form-label fs-6">Categoria</legend>
+        <div class="row row-cols-3 row-cols-sm-5 g-2">
+          @for (cat of categorias; track cat.id) {
+            <div class="col">
+              <input type="radio" class="btn-check" formControlName="categoria" [value]="cat.id" [id]="'cat-' + cat.id" />
+              <label class="btn btn-outline-secondary w-100 ac-categoria" [for]="'cat-' + cat.id">
+                <span class="icone-categoria" [style.--cor]="cat.cor" aria-hidden="true"><i class="bi" [class]="cat.icone"></i></span>
+                {{ cat.nome }}
+              </label>
+            </div>
+          }
+        </div>
+      </fieldset>
+
+      @if (!conta()) {
+        <fieldset>
+          <legend class="form-label fs-6">Repetição</legend>
+          <div class="btn-group w-100" role="group">
+            <input type="radio" class="btn-check" formControlName="repeticao" value="nenhuma" id="rep-nenhuma" />
+            <label class="btn btn-outline-secondary" for="rep-nenhuma">Não repete</label>
+            <input type="radio" class="btn-check" formControlName="repeticao" value="mensal" id="rep-mensal" />
+            <label class="btn btn-outline-secondary" for="rep-mensal">Todo mês</label>
+            <input type="radio" class="btn-check" formControlName="repeticao" value="parcelas" id="rep-parcelas" />
+            <label class="btn btn-outline-secondary" for="rep-parcelas">Parcelada</label>
+          </div>
+          @switch (form.controls.repeticao.value) {
+            @case ('mensal') {
+              <div class="form-text">Cria a conta nos próximos {{ mesesRecorrencia }} meses, no mesmo dia.</div>
+            }
+            @case ('parcelas') {
+              <div class="d-flex align-items-center gap-2 mt-2">
+                <label for="vezes" class="form-label mb-0">Em</label>
+                <input id="vezes" type="number" class="form-control" style="width: 6rem" formControlName="vezes" min="2" max="72"
+                  inputmode="numeric" [class.is-invalid]="invalido('vezes')" />
+                <span>vezes, uma por mês</span>
+              </div>
+              <div class="form-text">O valor acima é o de cada parcela.</div>
+            }
+          }
+        </fieldset>
+      }
+
+      <div>
+        <label for="observacao" class="form-label">Observação <span class="text-body-secondary">(opcional)</span></label>
+        <textarea id="observacao" class="form-control" rows="2" formControlName="observacao" maxlength="500"
+          placeholder="Código de barras, chave Pix, lembrete…"></textarea>
+      </div>
+
+      @if (conta()?.serie_id) {
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="tambemProximas" formControlName="tambemProximas" />
+          <label class="form-check-label" for="tambemProximas">
+            Aplicar também às próximas não pagas
+            <span class="d-block small text-body-secondary">Descrição, valor, categoria e observação. As datas continuam as mesmas.</span>
+          </label>
+        </div>
+      }
+
+      @if (erro()) {
+        <div class="alert alert-danger mb-0 small" role="alert">{{ erro() }}</div>
+      }
+
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-primary flex-grow-1 flex-sm-grow-0" [disabled]="salvando()">
+          @if (salvando()) { <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span> }
+          Salvar
+        </button>
+        <a routerLink="/contas" class="btn btn-outline-secondary">Cancelar</a>
+        @if (conta() && !confirmandoExclusao()) {
+          <button type="button" class="btn btn-outline-danger ms-sm-auto" (click)="confirmandoExclusao.set(true)">
+            <i class="bi bi-trash me-1" aria-hidden="true"></i>Excluir
+          </button>
+        }
+      </div>
+
+      @if (confirmandoExclusao()) {
+        <div class="alert alert-danger mb-0" role="alert">
+          <p class="mb-2 fw-semibold">Excluir esta conta? Não dá para desfazer.</p>
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-danger btn-sm" [disabled]="salvando()" (click)="excluir(false)">
+              {{ conta()?.serie_id ? 'Só esta' : 'Excluir' }}
+            </button>
+            @if (conta()?.serie_id) {
+              <button type="button" class="btn btn-danger btn-sm" [disabled]="salvando()" (click)="excluir(true)">Esta e as próximas</button>
+            }
+            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="confirmandoExclusao.set(false)">Voltar</button>
+          </div>
+        </div>
+      }
+    </div>
+  </form>
+}

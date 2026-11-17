@@ -1,51 +1,111 @@
-import { Component, signal } from '@angular/core';
+import { CurrencyPipe, DatePipe, TitleCasePipe } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Conta, ContasDados, situacaoDe } from '../../core/dados/contas-dados';
+import { emReais, limitesDoMes } from '../../core/util';
 import { EstadoVazio } from '../../shared/estado-vazio/estado-vazio';
+import { ItemConta } from '../../shared/item-conta/item-conta';
 
 type Filtro = 'todas' | 'pendentes' | 'pagas' | 'atrasadas';
 
-/** Lista de contas do mês. Na fase 1 passa a listar os dados do banco. */
+const FILTRAR: Record<Filtro, (c: Conta) => boolean> = {
+  todas: () => true,
+  pendentes: (c) => !c.paga_em,
+  pagas: (c) => !!c.paga_em,
+  atrasadas: (c) => situacaoDe(c) === 'atrasada',
+};
+
+/** Contas de um mês, com navegação entre meses e filtros. */
 @Component({
   selector: 'app-contas',
-  imports: [RouterLink, EstadoVazio],
-  template: `
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-      <h1 class="mb-0">Contas</h1>
-      <a routerLink="/contas/nova" class="btn btn-primary d-none d-lg-inline-flex align-items-center">
-        <i class="bi bi-plus-lg me-1"></i>Nova conta
-      </a>
-    </div>
-
-    <div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="Filtrar contas">
-      @for (f of filtros; track f.id) {
-        <button
-          type="button"
-          class="btn btn-sm rounded-pill px-3"
-          [class.btn-primary]="filtro() === f.id"
-          [class.btn-outline-secondary]="filtro() !== f.id"
-          [attr.aria-pressed]="filtro() === f.id"
-          (click)="filtro.set(f.id)"
-        >
-          {{ f.rotulo }}
-        </button>
-      }
-    </div>
-
-    <app-estado-vazio
-      icone="bi-receipt"
-      titulo="Nenhuma conta por aqui"
-      texto="As contas aparecem agrupadas por vencimento, e você marca como paga com um toque."
-    >
-      <a routerLink="/contas/nova" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Nova conta</a>
-    </app-estado-vazio>
-  `,
+  imports: [RouterLink, CurrencyPipe, DatePipe, TitleCasePipe, EstadoVazio, ItemConta],
+  templateUrl: './contas.html',
 })
 export class Contas {
+  private readonly dados = inject(ContasDados);
+
   protected readonly filtros: { id: Filtro; rotulo: string }[] = [
-    { id: 'todas', rotulo: 'Todas' },
     { id: 'pendentes', rotulo: 'Pendentes' },
     { id: 'pagas', rotulo: 'Pagas' },
     { id: 'atrasadas', rotulo: 'Atrasadas' },
+    { id: 'todas', rotulo: 'Todas' },
   ];
   protected readonly filtro = signal<Filtro>('pendentes');
+
+  private readonly hoje = new Date();
+  protected readonly mes = signal(new Date(this.hoje.getFullYear(), this.hoje.getMonth(), 1));
+  protected readonly ehMesAtual = computed(
+    () => this.mes().getFullYear() === this.hoje.getFullYear() && this.mes().getMonth() === this.hoje.getMonth(),
+  );
+
+  protected readonly doMes = signal<Conta[]>([]);
+  /** Só no mês atual: não pagas de meses anteriores. */
+  protected readonly anteriores = signal<Conta[]>([]);
+  protected readonly carregando = signal(true);
+  protected readonly erro = signal('');
+  protected readonly ocupadas = signal<ReadonlySet<string>>(new Set());
+
+  protected readonly listaMes = computed(() => this.doMes().filter(FILTRAR[this.filtro()]));
+  protected readonly listaAnteriores = computed(() =>
+    this.filtro() === 'pagas' ? [] : this.anteriores().filter(FILTRAR[this.filtro()]),
+  );
+
+  protected readonly totais = computed(() => {
+    const contas = this.doMes();
+    const soma = (lista: Conta[]) => emReais(lista.reduce((t, c) => t + c.valor_centavos, 0));
+    return { total: soma(contas), pago: soma(contas.filter((c) => c.paga_em)), falta: soma(contas.filter((c) => !c.paga_em)) };
+  });
+
+  constructor() {
+    void this.carregar();
+  }
+
+  protected mudarMes(delta: number): void {
+    const m = this.mes();
+    this.mes.set(new Date(m.getFullYear(), m.getMonth() + delta, 1));
+    void this.carregar();
+  }
+
+  protected voltarParaHoje(): void {
+    this.mes.set(new Date(this.hoje.getFullYear(), this.hoje.getMonth(), 1));
+    void this.carregar();
+  }
+
+  protected async alternarPaga(conta: Conta): Promise<void> {
+    this.ocupadas.update((s) => new Set(s).add(conta.id));
+    try {
+      await this.dados.marcarPaga(conta.id, !conta.paga_em);
+      await this.carregar(false);
+    } catch {
+      this.erro.set('Não foi possível atualizar a conta. Tente de novo.');
+    } finally {
+      this.ocupadas.update((s) => {
+        const novo = new Set(s);
+        novo.delete(conta.id);
+        return novo;
+      });
+    }
+  }
+
+  protected async carregar(mostrarCarregando = true): Promise<void> {
+    const m = this.mes();
+    if (mostrarCarregando) this.carregando.set(true);
+    this.erro.set('');
+    try {
+      const [doMes, anteriores] = await Promise.all([
+        this.dados.doMes(m.getFullYear(), m.getMonth()),
+        this.ehMesAtual()
+          ? this.dados.atrasadasAntesDe(limitesDoMes(m.getFullYear(), m.getMonth()).inicio)
+          : Promise.resolve([]),
+      ]);
+      // ignora a resposta se o mês mudou enquanto carregava
+      if (m !== this.mes()) return;
+      this.doMes.set(doMes);
+      this.anteriores.set(anteriores);
+    } catch {
+      this.erro.set('Não foi possível carregar as contas. Confira a internet.');
+    } finally {
+      this.carregando.set(false);
+    }
+  }
 }
