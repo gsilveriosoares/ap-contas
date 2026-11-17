@@ -1,0 +1,12 @@
+// Configuração para publicar na Cloudflare (Workers com arquivos estáticos).
+// Build: npm run build  ·  Deploy: npx wrangler deploy
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ap-contas",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist/ap-contas/browser",
+    // Rotas como /contas devolvem o index.html (o Angular cuida da navegação)
+    "not_found_handling": "single-page-application"
+  }
+}

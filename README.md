@@ -27,17 +27,21 @@ npm run build
 
 Gera `dist/ap-contas/browser`, a pasta que é publicada.
 
-## Publicar no Cloudflare Pages
+## Publicar na Cloudflare
 
-1. No painel da Cloudflare: **Workers & Pages → Create → Pages → Connect to Git** e escolha o repositório `ap-contas`.
-2. Configuração do build:
-   - Framework preset: **Angular** (ou nenhum)
-   - Build command: `npm run build`
-   - Build output directory: `dist/ap-contas/browser`
-   - A versão do Node vem do arquivo `.node-version`.
-3. Cada push na branch `main` publica sozinho.
+O repositório funciona nos dois fluxos do painel da Cloudflare (**Workers & Pages → Create**):
 
-Como não existe `404.html`, o Cloudflare Pages trata o site como SPA e devolve o `index.html` para qualquer rota (ex.: `/contas`).
+**Worker (padrão atual do painel)** — usa o `wrangler.jsonc` da raiz:
+- Build command: `npm run build`
+- Deploy command: `npx wrangler deploy`
+
+**Pages** (aba "Pages" → Import an existing Git repository):
+- Framework preset: nenhum
+- Build command: `npm run build`
+- Build output directory: `dist/ap-contas/browser`
+
+A versão do Node vem do arquivo `.node-version`. Cada push na branch `main` publica sozinho.
+Rotas como `/contas` devolvem o `index.html` (SPA): no Worker pelo `not_found_handling`, no Pages porque não existe `404.html`.
 
 ## Instalar no celular
 
