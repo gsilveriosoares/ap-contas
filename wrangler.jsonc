@@ -4,6 +4,10 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ap-contas",
   "compatibility_date": "2026-11-01",
+  // Mantém igual ao painel da Cloudflare (Settings → Observability)
+  "observability": {
+    "enabled": false
+  },
   "assets": {
     "directory": "./dist/ap-contas/browser",
     // Rotas como /contas devolvem o index.html (o Angular cuida da navegação)
