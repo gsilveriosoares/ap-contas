@@ -60,3 +60,13 @@
     </a>
   }
 </nav>
+
+<!-- Aviso de versão nova (PWA) -->
+@if (atualizacao.disponivel()) {
+  <div class="ac-aviso-versao alert alert-primary d-flex align-items-center gap-2 mb-0 shadow" role="status">
+    <i class="bi bi-arrow-repeat fs-5" aria-hidden="true"></i>
+    <span class="flex-grow-1">Nova versão disponível</span>
+    <button type="button" class="btn btn-primary btn-sm" (click)="atualizacao.atualizar()">Atualizar</button>
+    <button type="button" class="btn-close" aria-label="Agora não" (click)="atualizacao.dispensar()"></button>
+  </div>
+}

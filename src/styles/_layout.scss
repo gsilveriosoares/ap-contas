@@ -194,3 +194,22 @@ $ac-altura-inferior: 4.25rem;
     transform: scale(0.96);
   }
 }
+
+// Aviso "Nova versão disponível": acima da barra inferior no celular, canto no computador
+.ac-aviso-versao {
+  position: fixed;
+  z-index: 1040;
+  left: 1rem;
+  right: 1rem;
+  bottom: calc(#{$ac-altura-inferior} + env(safe-area-inset-bottom) + 0.75rem);
+  padding: 0.5rem 0.75rem;
+
+  .btn-sm { min-height: 2.25rem; }
+
+  @include media-breakpoint-up(lg) {
+    left: auto;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    width: 22rem;
+  }
+}

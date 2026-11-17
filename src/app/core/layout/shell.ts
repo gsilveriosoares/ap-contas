@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Logo } from '../../shared/marca/logo';
+import { AtualizacaoApp } from '../pwa/atualizacao-app';
 import { NAV_INFERIOR_DIREITA, NAV_INFERIOR_ESQUERDA, NAV_PRINCIPAL, NAV_SECUNDARIA } from './navegacao';
 
 /**
@@ -19,4 +20,5 @@ export class Shell {
   protected readonly navSecundaria = NAV_SECUNDARIA;
   protected readonly navInferiorEsquerda = NAV_INFERIOR_ESQUERDA;
   protected readonly navInferiorDireita = NAV_INFERIOR_DIREITA;
+  protected readonly atualizacao = inject(AtualizacaoApp);
 }
