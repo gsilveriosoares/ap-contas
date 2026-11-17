@@ -1,0 +1,88 @@
+// ApContas — identidade visual (tokens do Bootstrap)
+// Mude as cores aqui; todo o Bootstrap é gerado a partir delas.
+
+// ---- Paleta da marca ----
+$verde-conta: #0f6e5c; // primária: ações, links, destaque
+$ambar: #e0a526; // destaque secundário: reservas, metas, avisos
+$ardosia: #5b6b66; // texto secundário, ícones neutros
+
+// Cinzas com leve tom verde (combinam com a primária)
+$white: #ffffff;
+$gray-100: #f3f6f5;
+$gray-200: #e2e8e6;
+$gray-300: #cfd8d5;
+$gray-400: #a9b6b2;
+$gray-500: #84928d;
+$gray-600: #5b6b66;
+$gray-700: #44524e;
+$gray-800: #2a3632;
+$gray-900: #14211d;
+$black: #000000;
+
+// ---- Cores de tema (Bootstrap) ----
+$primary: $verde-conta;
+$secondary: $ardosia;
+$success: #1f7a3a; // paga
+$info: #2563a8;
+$warning: $ambar; // vence em breve / reservas
+$danger: #c0303a; // atrasada
+$light: $gray-100;
+$dark: $gray-900;
+
+$min-contrast-ratio: 4.5;
+
+// ---- Fundo e texto ----
+$body-bg: #f5f7f6;
+$body-color: #1b2a26;
+$body-secondary-color: $gray-600;
+$link-color: $primary;
+$link-decoration: none;
+$link-hover-decoration: underline;
+
+// Modo escuro
+$body-bg-dark: #0f1513;
+$body-color-dark: #e4ece9;
+$body-secondary-bg-dark: #17201d;
+$body-tertiary-bg-dark: #1c2623;
+$border-color-dark: #2a3632;
+$link-color-dark: #4fc2a8;
+$link-hover-color-dark: #7dd6c1;
+
+// ---- Tipografia ----
+$font-family-sans-serif: 'Inter Variable', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+$headings-font-family: 'Space Grotesk Variable', 'Segoe UI', system-ui, sans-serif;
+$headings-font-weight: 600;
+$font-size-base: 1rem;
+$h1-font-size: 1.75rem;
+$h2-font-size: 1.4rem;
+$h3-font-size: 1.2rem;
+$h4-font-size: 1.05rem;
+$h5-font-size: 1rem;
+$h6-font-size: 0.875rem;
+
+// ---- Forma ----
+$border-radius: 0.625rem;
+$border-radius-sm: 0.4rem;
+$border-radius-lg: 0.875rem;
+$border-radius-xl: 1.125rem;
+$border-color: $gray-200;
+
+$card-border-color: $gray-200;
+$card-cap-bg: transparent;
+$card-spacer-y: 1rem;
+$card-spacer-x: 1rem;
+
+$btn-padding-y: 0.55rem;
+$btn-padding-x: 1rem;
+$btn-font-weight: 600;
+$input-padding-y: 0.55rem;
+$input-padding-x: 0.75rem;
+
+$badge-font-weight: 600;
+$badge-padding-x: 0.6em;
+$badge-border-radius: 50rem;
+
+$box-shadow-sm: 0 1px 2px rgba(20, 33, 29, 0.06);
+$box-shadow: 0 6px 18px rgba(20, 33, 29, 0.08);
+
+// Breakpoints padrão (mobile-first): sm 576, md 768, lg 992 (menu lateral), xl 1200

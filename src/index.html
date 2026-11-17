@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>ApContas</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="ApContas: suas contas, vencimentos e dinheiro em um só lugar." />
+    <meta name="theme-color" content="#0f6e5c" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="logo.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <script>
+      // Tema claro/escuro segue a preferência do aparelho
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        var aplicar = function () {
+          document.documentElement.setAttribute('data-bs-theme', mq.matches ? 'dark' : 'light');
+        };
+        aplicar();
+        mq.addEventListener('change', aplicar);
+      })();
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
+</html>

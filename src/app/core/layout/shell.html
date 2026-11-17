@@ -1,0 +1,62 @@
+<a class="visually-hidden-focusable ac-pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="ac-shell">
+  <!-- Menu lateral (computador) -->
+  <aside class="ac-lateral d-none d-lg-flex">
+    <a routerLink="/inicio" class="ac-lateral-logo" aria-label="ApContas, ir para o início">
+      <app-logo [tamanho]="34" />
+    </a>
+
+    <a routerLink="/contas/nova" class="btn btn-primary w-100"><i class="bi bi-plus-lg me-1"></i>Nova conta</a>
+
+    <nav class="d-flex flex-column gap-1" aria-label="Menu principal">
+      @for (item of navPrincipal; track item.rota) {
+        <a class="ac-link" [routerLink]="item.rota" routerLinkActive="active" ariaCurrentWhenActive="page" #rla="routerLinkActive">
+          <i class="bi" [class]="rla.isActive ? item.iconeAtivo : item.icone" aria-hidden="true"></i>
+          <span>{{ item.rotulo }}</span>
+          @if (item.fase) {
+            <span class="ac-fase" title="Disponível na fase {{ item.fase }}">fase {{ item.fase }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <nav class="d-flex flex-column gap-1 mt-auto" aria-label="Menu secundário">
+      @for (item of navSecundaria; track item.rota) {
+        <a class="ac-link" [routerLink]="item.rota" routerLinkActive="active" ariaCurrentWhenActive="page" #rla="routerLinkActive">
+          <i class="bi" [class]="rla.isActive ? item.iconeAtivo : item.icone" aria-hidden="true"></i>
+          <span>{{ item.rotulo }}</span>
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <div class="ac-area">
+    <!-- Topo (celular) -->
+    <header class="ac-topo d-lg-none">
+      <a routerLink="/inicio" aria-label="ApContas, ir para o início"><app-logo [tamanho]="30" /></a>
+      <a routerLink="/configuracoes" class="ac-topo-acao" aria-label="Configurações">
+        <i class="bi bi-gear" aria-hidden="true"></i>
+      </a>
+    </header>
+
+    <main id="conteudo" class="ac-main" tabindex="-1">
+      <router-outlet />
+    </main>
+  </div>
+</div>
+
+<!-- Barra inferior (celular) -->
+<nav class="ac-inferior d-lg-none" aria-label="Menu principal">
+  @for (item of navInferiorEsquerda; track item.rota) {
+    <a class="ac-aba" [routerLink]="item.rota" routerLinkActive="active" ariaCurrentWhenActive="page" #rla="routerLinkActive">
+      <i class="bi" [class]="rla.isActive ? item.iconeAtivo : item.icone" aria-hidden="true"></i>{{ item.rotulo }}
+    </a>
+  }
+  <a class="ac-fab" routerLink="/contas/nova" aria-label="Nova conta"><i class="bi bi-plus-lg" aria-hidden="true"></i></a>
+  @for (item of navInferiorDireita; track item.rota) {
+    <a class="ac-aba" [routerLink]="item.rota" routerLinkActive="active" ariaCurrentWhenActive="page" #rla="routerLinkActive">
+      <i class="bi" [class]="rla.isActive ? item.iconeAtivo : item.icone" aria-hidden="true"></i>{{ item.rotulo }}
+    </a>
+  }
+</nav>

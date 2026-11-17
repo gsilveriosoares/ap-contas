@@ -1,0 +1,5 @@
+// Ordem importa: variáveis da marca -> Bootstrap -> estilos próprios
+@import 'styles/variables';
+@import 'bootstrap/scss/bootstrap';
+@import 'styles/base';
+@import 'styles/layout';

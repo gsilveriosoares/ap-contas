@@ -1,0 +1,112 @@
+// Estilos globais do ApContas (depois do Bootstrap)
+
+:root,
+[data-bs-theme='light'] {
+  --ac-ambar: #{$ambar};
+  --ac-toque-min: 44px; // altura mínima de alvos de toque
+  --ac-superficie: #{$white}; // cartões, menu lateral, barra inferior
+}
+
+[data-bs-theme='dark'] {
+  --ac-superficie: #{$body-secondary-bg-dark};
+}
+
+// Cartões e listas sobre a superfície (fundo da página fica levemente cinza-esverdeado)
+.card {
+  --bs-card-bg: var(--ac-superficie);
+}
+
+.list-group {
+  --bs-list-group-bg: var(--ac-superficie);
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+.display-1,
+.display-2,
+.display-3,
+.display-4 {
+  text-wrap: balance;
+  letter-spacing: -0.01em;
+}
+
+// Valores em dinheiro: números alinhados e fonte de título
+.valor {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.valor-destaque {
+  font-family: $headings-font-family;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+// Rótulo pequeno em caixa alta
+.rotulo {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--bs-secondary-color);
+}
+
+// Ícone de categoria: quadrado arredondado com a cor da categoria
+.icone-categoria {
+  --cor: var(--bs-primary);
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  border-radius: $border-radius;
+  color: var(--cor);
+  background: color-mix(in srgb, var(--cor) 14%, transparent);
+  font-size: 1.05rem;
+}
+
+// Botões e itens de lista com área de toque confortável
+.btn,
+.list-group-item-action {
+  min-height: var(--ac-toque-min);
+}
+
+.btn-sm {
+  min-height: 0;
+}
+
+// Modo escuro: o verde da marca fica escuro demais como texto/contorno; usamos a versão clara
+[data-bs-theme='dark'] {
+  .text-primary {
+    color: $link-color-dark !important;
+  }
+
+  .btn-outline-primary {
+    --bs-btn-color: #{$link-color-dark};
+    --bs-btn-border-color: #{$link-color-dark};
+    --bs-btn-hover-bg: #{$link-color-dark};
+    --bs-btn-hover-border-color: #{$link-color-dark};
+    --bs-btn-hover-color: #{$gray-900};
+    --bs-btn-active-bg: #{$link-color-dark};
+    --bs-btn-active-color: #{$gray-900};
+  }
+}
+
+:focus-visible {
+  outline: 3px solid rgba($primary, 0.45);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
