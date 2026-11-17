@@ -34,8 +34,15 @@ export class Auth {
     if (error) throw error;
   }
 
-  async confirmarCodigo(email: string, codigo: string): Promise<void> {
-    const { data, error } = await this.supabase.auth.verifyOtp({ email, token: codigo, type: 'email' });
+  /**
+   * Confirma o acesso com o código de 6 dígitos ou com o link do e-mail colado no app.
+   * O link serve para o app instalado no iPhone, que não abre links do e-mail.
+   */
+  async confirmarCodigo(email: string, entrada: string): Promise<void> {
+    const link = lerLinkDeAcesso(entrada);
+    const { data, error } = link
+      ? await this.supabase.auth.verifyOtp({ token_hash: link.token, type: link.tipo })
+      : await this.supabase.auth.verifyOtp({ email, token: entrada.replace(/\D/g, ''), type: 'email' });
     if (error) throw error;
     this.sessao.set(data.session);
   }
@@ -43,6 +50,24 @@ export class Auth {
   async sair(): Promise<void> {
     await this.supabase.auth.signOut();
     this.sessao.set(null);
+  }
+}
+
+const TIPOS_LINK = ['magiclink', 'signup', 'email'] as const;
+type TipoLink = (typeof TIPOS_LINK)[number];
+
+/** Extrai o token do link do e-mail (".../auth/v1/verify?token=...&type=magiclink"). null se não for um link. */
+export function lerLinkDeAcesso(texto: string): { token: string; tipo: TipoLink } | null {
+  const inicio = texto.indexOf('http');
+  if (inicio < 0) return null;
+  try {
+    const url = new URL(texto.slice(inicio).trim().split(/\s/)[0]);
+    const token = url.searchParams.get('token');
+    const tipo = url.searchParams.get('type') ?? 'magiclink';
+    if (!token || !TIPOS_LINK.includes(tipo as TipoLink)) return null;
+    return { token, tipo: tipo as TipoLink };
+  } catch {
+    return null;
   }
 }
 

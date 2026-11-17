@@ -47,14 +47,15 @@ Rotas como `/contas` devolvem o `index.html` (SPA): no Worker pelo `not_found_ha
 
 Conexão em `src/app/core/supabase/config.ts` (só a chave **publishable**, nunca a secret).
 Configuração no painel do Supabase:
+(O app instalado no iPhone entra colando o link do e-mail na tela de entrar, porque o link abre no Safari.
+Editar o texto do e-mail para incluir o código de 6 dígitos exige SMTP próprio no plano grátis.)
+
 
 1. **SQL Editor** → colar `supabase/001_contas.sql` → **Run** (cria a tabela `contas` com RLS).
 2. **Authentication → URL Configuration**
    - Site URL: `https://ap-contas.gsilveriosoares.workers.dev` (para onde o link do e-mail leva)
    - Redirect URLs: `http://localhost:4200` (só para testar no computador)
-3. **Authentication → Emails → Magic Link**: incluir `{{ .Token }}` no texto, para o código de 6 dígitos
-   (o app instalado no celular entra pelo código, porque o link do e-mail abre no navegador).
-4. Depois do primeiro login: **Authentication → Sign In / Providers** → desligar **Allow new users to sign up**
+3. Depois do primeiro login: **Authentication → Sign In / Providers** → desligar **Allow new users to sign up**
    (só o dono usa o app).
 
 ## Instalar no celular

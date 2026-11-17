@@ -1,6 +1,6 @@
 <div class="entrar">
   <!-- Marca -->
-  <section class="marca" aria-label="ApContas">
+  <section class="marca" [class.compacta]="etapa() === 'codigo'" aria-label="ApContas">
     <div class="marca-conteudo">
       <div class="marca-logo">
         <img src="logo.svg" alt="" width="52" height="52" />
@@ -24,7 +24,7 @@
     <div class="folha-conteudo">
       @if (etapa() === 'email') {
         <h2 class="folha-titulo">Entrar</h2>
-        <p class="text-body-secondary mb-4">Digite seu e-mail. Mandamos um acesso na hora — sem senha para lembrar.</p>
+        <p class="text-body-secondary mb-4">Digite seu e-mail. Mandamos um link de acesso na hora — sem senha para lembrar.</p>
 
         <form (ngSubmit)="enviar()" #fEmail="ngForm">
           <label for="email" class="form-label fw-semibold">E-mail</label>
@@ -46,15 +46,27 @@
         <h2 class="folha-titulo">Confira seu e-mail</h2>
         <p class="text-body-secondary mb-4">
           Enviamos para <strong class="text-body">{{ email }}</strong>.<br />
-          Toque no link do e-mail <strong>ou</strong> digite o código abaixo.
+          Toque no link <strong>Sign in</strong> do e-mail.
         </p>
 
-        <form (ngSubmit)="confirmar()" #fCodigo="ngForm">
-          <label for="codigo" class="form-label fw-semibold">Código de 6 dígitos</label>
-          <input id="codigo" name="codigo" class="form-control form-control-lg codigo mb-3" placeholder="000000" required
-            minlength="6" maxlength="8" pattern="[0-9]*" inputmode="numeric" autocomplete="one-time-code"
-            [(ngModel)]="codigo" [disabled]="carregando()" />
-          <button class="btn btn-primary btn-lg w-100 mb-2" [disabled]="fCodigo.invalid || carregando()">
+        <div class="dica mb-3">
+          <i class="bi bi-phone" aria-hidden="true"></i>
+          <span>Usando o app instalado na tela inicial? No e-mail, <strong>segure o dedo no link</strong>, copie e cole aqui.</span>
+        </div>
+
+        <form (ngSubmit)="confirmar()">
+          <label for="codigo" class="form-label fw-semibold">Link ou código do e-mail</label>
+          <div class="input-group input-group-lg mb-3">
+            <input id="codigo" name="codigo" class="form-control" [class.codigo]="pareceCodigo()" placeholder="Cole aqui"
+              autocomplete="one-time-code" autocapitalize="off" spellcheck="false"
+              [ngModel]="codigo()" (ngModelChange)="codigo.set($event)" [disabled]="carregando()" />
+            @if (podeColar) {
+              <button type="button" class="btn btn-outline-secondary" (click)="colar()" [disabled]="carregando()">
+                <i class="bi bi-clipboard me-1" aria-hidden="true"></i>Colar
+              </button>
+            }
+          </div>
+          <button class="btn btn-primary btn-lg w-100 mb-2" [disabled]="!entradaValida() || carregando()">
             @if (carregando()) {
               <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Entrando…
             } @else {
